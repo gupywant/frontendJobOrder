@@ -1,0 +1,358 @@
+<!-- =========================================================================================
+  File Name: DashboardAnalytics.vue
+  Description: Dashboard Analytics
+  ----------------------------------------------------------------------------------------
+  Item Name: Vuexy - Vuejs, HTML & Laravel Admin Dashboard Template
+  Author: Pixinvent
+  Author URL: http://www.themeforest.net/user/pixinvent
+========================================================================================== -->
+
+<template>
+  <div id="transaction-edit">
+    <div class="vx-row">
+      <!-- CARD 9: DISPATCHED ORDERS -->
+      <div class="vx-col w-full">
+        <vx-card :title="titleTop">
+          <div slot="no-body" class="mt-4 ml-4 mr-4 mb-4">
+            <vs-divider color="primary"></vs-divider>
+            <div class="vx-row"> 
+              <div class="vx-col w-1/2">
+                <vx-input-group class="mb-6">
+                  Customer
+                  <v-select label="name" :options="customerList" :disabled="serviceDisabled" @input="onInput()" v-model="customer" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
+                </vx-input-group>
+              </div>
+              <div class="vx-col w-1/2">
+                <vx-input-group class="mb-6">
+                  Vendor
+                  <v-select label="name" :options="vendorList" v-model="vendor" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
+                </vx-input-group>
+              </div>
+            </div>
+          </div>
+          <vs-divider color="primary">Service</vs-divider>
+            <div class="vx-row">
+              <div class="vx-col w-full">
+                <vs-table search max-items="5" :data="availServiceList" class="table-dark-inverted" stripe>
+                  <template slot="thead">
+                    <vs-th>Service Name</vs-th>
+                    <vs-th>Description</vs-th>
+                    <vs-th>Qty</vs-th>
+                    <vs-th>Planned Amount</vs-th>
+                  </template>
+
+                  <template slot-scope="{data}">
+                    <vs-tr :key="i" v-for="(tr, i) in data">
+                      <vs-td :data="i">
+                        <span>{{data[i].name}}</span>
+                      </vs-td>
+                      <vs-td :data="data[i].description">
+                        <span v-if="data[i].description.length >= 10">{{data[i].description.substr(0,10)}}..</span>
+                        <span v-else>{{data[i].description.substr(0,10)}}</span>
+                      </vs-td>
+                      <vs-td>
+                        <vs-input v-validate="'required|numeric'" v-model="data[i].qty" type="text" placeholder="Planned Amount" />
+                      </vs-td>
+                      <vs-td>
+                        <vs-input v-validate="'required|numeric'" v-model="data[i].planned_amount" type="text" placeholder="Planned Amount" />
+                      </vs-td>
+                    </vs-tr>
+                  </template>
+                </vs-table>
+                <br/>
+                <vs-button @click="addModal()" color="primary" type="filled">Add More Service</vs-button>
+              </div>
+            </div>
+          <!-- Save & Reset Button -->
+          <div class="vx-row">
+            <div class="vx-col w-full">
+              <div class="mt-8 flex flex-wrap items-center justify-end">
+                <vs-button class="ml-auto mt-2" @click="saveTransaction()">Save</vs-button>
+              </div>
+            </div>
+          </div>
+        </vx-card>
+      </div>
+    </div>
+     <!--popup modal -->
+    <div class="centerx">
+      <vs-popup class="holamundo"  :title="title" :active.sync="modal">
+        <div class="vx-col w-full">  
+          <vx-input-group class="mb-6">
+            <v-select label="name" :options="options" v-model="newService" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
+          </vx-input-group>
+        </div>
+        <div>
+          <vs-button @click="addService()" color="primary" type="filled">Submit</vs-button>
+        </div>
+      </vs-popup>
+    </div>
+    <!-- end off popup modal -->
+  </div>
+</template>
+
+<script>
+import vSelect from 'vue-select'
+export default {
+  data () {
+    return {
+      x: null,
+      planned_amount: [],
+      serviceDisabled: true,
+      customerList: [],
+      customer: [],
+      vendorList: [],
+      vendor: [],
+      availServiceList: [],
+      availService: [],
+      avail : false,
+      titleTop: 'Edit Job Order',
+      title: '',
+      modal: false,
+      newService: [],
+      selected: [],
+      options: []
+    }
+  },
+  components: {
+    'v-select': vSelect
+  },
+  async created () {
+    await this.retrieveCustomerList()
+    await this.retrieveVendorList()
+    await this.retrieveTransactionDetail()
+  },
+  methods: {
+    add () {
+      this.addTransaction()
+    },
+    addModal () {
+      this.retrieveServiceList()
+      this.title = 'Add New Service'
+      this.newService = []
+      this.modal = true
+    },
+    addService () {
+      const payload = {
+        id_code: this.$route.params.id,
+        id_customer: this.customer.id_customer,
+        id_service: this.newService._id,
+        id_vendor: this.vendor._id,
+        edit: true
+      }
+      this.$vs.loading()
+      this.$store.dispatch('addCustomerService', payload)
+        .then(() => {
+          this.availServiceList = []
+          this.retrieveTransactionDetail()
+          this.modal = false
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Success',
+            text: 'New Service Added Successfully',
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'success'
+          })
+        })
+        .catch((error) => { 
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Error',
+            text: error.message,
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
+          })
+        })
+    },
+    retrieveServiceList () {
+      this.serviceList = []
+      this.$store.dispatch('retrieveServiceList')
+        .then((response) => {
+          this.options = response.data.data
+          this.$vs.loading.close()
+        })
+        .catch((error) => {
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Error',
+            text: error.message,
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
+          })
+        })
+    },
+    retrieveTransactionDetail () {
+      const id = this.$route.params.id
+      this.$vs.loading()
+      this.$store.dispatch('retrieveTransactionDetail', id)
+        .then(async (response) => {
+          await response.data.data.map((item) => {
+            this.availServiceList.push({id_service: item.service_id, name: item.service_name, description: item.service_description, qty: item.qty, planned_amount: item.planned_amount})
+          })
+          this.customer = await {id_customer: response.data.data[0].customer_id, name: response.data.data[0].customer_name}
+          this.vendor = {_id: response.data.data[0].vendor_id, name: response.data.data[0].vendor_name}
+          this.$vs.loading.close()
+        })
+        .catch((error) => {
+          this.transaction_not_found = true
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Error',
+            text: error.message,
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
+          })
+        })
+    },
+    onInput () {
+      this.availService = []
+      if (this.customer.length !== 0) {
+        this.serviceDisabled = false
+        this.availServiceList = []
+        this.retrieveAvailServiceList()
+      }
+    },
+    saveTransaction () {
+      this.$validator.validateAll().then(async (result) => {
+        if (result) {
+          const payload = {
+            _id: this.$route.params.id,
+            id_customer: this.customer.id_customer,
+            id_vendor: this.vendor._id,
+            id_service: this.availServiceList,
+            planned_amount: this.planned_amount
+          }
+          this.$store.dispatch('editTransaction', payload)
+            .then(() => {
+              this.$vs.loading.close()
+              this.$vs.notify({
+                title: 'Success',
+                text: 'Transaction has been updated',
+                iconPack: 'feather',
+                icon: 'icon-alert-circle',
+                color: 'success'
+              })
+            })
+            .catch((error) => { 
+              this.$vs.loading.close()
+              this.$vs.notify({
+                title: 'Error',
+                text: error.message,
+                iconPack: 'feather',
+                icon: 'icon-alert-circle',
+                color: 'danger'
+              })
+            })
+        } else {
+          this.$vs.notify({
+            title: 'Error',
+            text: 'Make sure form is correct!!',
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
+          })
+        } 
+      })
+    },
+    retrieveCustomerList () {
+      this.$store.dispatch('retrieveCustomerList')
+        .then((response) => {
+          this.customerList = response.data.data
+          this.$vs.loading.close()
+        })
+        .catch((error) => {
+          this.$vs.notify({
+            title: 'Error',
+            text: error.message,
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
+          })
+        })
+    },
+    retrieveVendorList () {
+      this.$vs.loading()
+      this.$store.dispatch('retrieveVendorList')
+        .then((response) => {
+          this.vendorList = response.data.data
+          this.$vs.loading.close()
+        })
+        .catch((error) => {
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Error',
+            text: error.message,
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
+          })
+        })
+    },
+    codeGenerator (code) {
+      const max = 5
+      let out = ''
+      const len = code.toString().length
+      for (let n = len; n <= max; n++) {
+        out = out.concat('0')
+      }
+      return out.concat(code.toString())
+    },
+    retrieveAvailServiceList () {
+      const id = this.customer.id_customer
+      console.log(this.customer)
+      this.$store.dispatch('retrieveAvailServiceList', id)
+        .then(async (response) => {
+          this.availServiceList = await response.data.data
+          this.titleTop = `Transaction Edit - Code : TRX-${this.codeGenerator(response.data.data[0].code)}`
+          await response.data.amount.map(item => this.planned_amount.push(item.planned_amount))
+        })
+        .catch((error) => {
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Error',
+            text: error.message,
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'danger'
+          })
+        })
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+/*! rtl:begin:ignore */
+#dashboard-analytics {
+  .greet-user{
+    position: relative;
+
+    .decore-left{
+      position: absolute;
+      left:0;
+      top: 0;
+    }
+    .decore-right{
+      position: absolute;
+      right:0;
+      top: 0;
+    }
+  }
+
+  @media(max-width: 576px) {
+    .decore-left, .decore-right{
+      width: 140px;
+    }
+  }
+}
+//ADD BY GUPY WANTORO
+.con-images {
+  max-height: 500px;
+  overflow: auto;
+  /*! rtl:end:ignore */
+}
+</style>
