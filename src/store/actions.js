@@ -9,6 +9,18 @@
 import axios from 'axios'
 import router from '@/router'
 
+axios.defaults.baseURL = 'http://101.50.0.228:3000'
+axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
+
+/////////////////////////////
+///add by gupy wantoro
+////////////////////////////
+const afterLogin = axios.create({
+  baseURL: 'http://101.50.0.228:3000',
+  headers: { 'Access-Control-Allow-Origin' : '*'}
+})
+
+/* local configuration
 axios.defaults.baseURL = 'http://localhost:3000'
 axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
 
@@ -19,7 +31,7 @@ const afterLogin = axios.create({
   baseURL: 'http://localhost:3000',
   headers: { 'Access-Control-Allow-Origin' : '*'}
 })
-
+*/
 //Axios after login code
 afterLogin.interceptors.request.use(
   function (config) {
