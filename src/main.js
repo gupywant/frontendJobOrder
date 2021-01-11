@@ -105,7 +105,7 @@ import VueSocketIO from 'vue-socket.io'
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'http://localhost:30000',
+  connection: 'http://101.50.0.228:30000',
   vuex: {
     store,
     actionPrefix: 'SOCKET_',
