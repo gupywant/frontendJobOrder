@@ -9,14 +9,14 @@
 import axios from 'axios'
 import router from '@/router'
 
-axios.defaults.baseURL = 'http://101.50.0.228:3000'
+axios.defaults.baseURL = 'https://uat-api.getrans.co.id/v1'
 axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
 
 /////////////////////////////
 ///add by gupy wantoro
 ////////////////////////////
 const afterLogin = axios.create({
-  baseURL: 'http://101.50.0.228:3000',
+  baseURL: 'https://uat-api.getrans.co.id/v1',
   headers: { 'Access-Control-Allow-Origin' : '*'}
 })
 

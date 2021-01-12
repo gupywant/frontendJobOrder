@@ -105,7 +105,7 @@ import VueSocketIO from 'vue-socket.io'
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'http://101.50.0.228:30000',
+  connection: 'https://uat-api.getrans.co.id/realtime',
   vuex: {
     store,
     actionPrefix: 'SOCKET_',
