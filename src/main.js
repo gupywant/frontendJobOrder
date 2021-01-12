@@ -105,13 +105,14 @@ import VueSocketIO from 'vue-socket.io'
 
 Vue.use(new VueSocketIO({
   debug: true,
-  connection: 'https://uat-api.getrans.co.id',
+  connection: 'http://localhost:30000',
+  //connection: 'https://uat-api.getrans.co.id',
+  //options: { path: '/realtime/' },
   vuex: {
     store,
     actionPrefix: 'SOCKET_',
     mutationPrefix: 'SOCKET_'
-  },
-  options: { path: '/realtime/' }
+  }
 }))
 
 //v-image

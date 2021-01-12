@@ -20,7 +20,7 @@ const afterLogin = axios.create({
   headers: { 'Access-Control-Allow-Origin' : '*'}
 })
 
-/* local configuration
+/*local configuration
 axios.defaults.baseURL = 'http://localhost:3000'
 axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
 
@@ -30,8 +30,8 @@ axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
 const afterLogin = axios.create({
   baseURL: 'http://localhost:3000',
   headers: { 'Access-Control-Allow-Origin' : '*'}
-})
-*/
+})*/
+
 //Axios after login code
 afterLogin.interceptors.request.use(
   function (config) {
