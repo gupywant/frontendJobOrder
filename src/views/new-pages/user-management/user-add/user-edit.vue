@@ -143,8 +143,7 @@ export default {
             image: this.image,
             active: this.active,
             role: this.role,
-            department:this.department,
-            password: '1234'//this.password
+            department:this.department
           }
           this.$vs.loading()
           this.$store.dispatch('editUserData', payload)
