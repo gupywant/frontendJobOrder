@@ -28,7 +28,7 @@ axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
 ///add by gupy wantoro
 ////////////////////////////
 const afterLogin = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'http://localhost:3000/api/v1',
   headers: { 'Access-Control-Allow-Origin' : '*'}
 })*/
 
@@ -56,7 +56,7 @@ const actions = {
   ////////////////////////////
   retrieveImage (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/transaction/image/${id}`)
+      afterLogin.get(`/transaction/image/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -74,7 +74,7 @@ const actions = {
   },
   uploadImage (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post(`/api/v1/transaction/image/${payload.id}`, payload)
+      afterLogin.post(`/transaction/image/${payload.id}`, payload)
         .then((response) => {
           resolve(response)
         })
@@ -92,7 +92,7 @@ const actions = {
   },
   cancelInvoice (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/invoice/cancel/${id}`)
+      afterLogin.delete(`/invoice/cancel/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -110,7 +110,7 @@ const actions = {
   },
   retrieveInvoice (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/invoice/${id}`)
+      afterLogin.get(`/invoice/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -126,7 +126,7 @@ const actions = {
   },
   retrieveInvoiceList () {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/invoice')
+      afterLogin.get('/invoice')
         .then((response) => {
           resolve(response)
         })
@@ -142,7 +142,7 @@ const actions = {
   },
   addInvoice (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/invoice', payload)
+      afterLogin.post('/invoice', payload)
         .then((response) => {
           resolve(response)
         })
@@ -161,7 +161,7 @@ const actions = {
   },
   retrieveInvoiceAcceptedList (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/transaction/invoice/accepted/${id}`)
+      afterLogin.get(`/transaction/invoice/accepted/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -177,7 +177,7 @@ const actions = {
   },
   retrieveAcceptedList () {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/transaction/accepted')
+      afterLogin.get('/transaction/accepted')
         .then((response) => {
           resolve(response)
         })
@@ -193,7 +193,7 @@ const actions = {
   },
   settlementTransaction (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/transaction/settlement', payload)
+      afterLogin.post('/transaction/settlement', payload)
         .then((response) => {
           resolve(response)
         })
@@ -212,7 +212,7 @@ const actions = {
   },
   retrieveCancelList () {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/transaction/cancel/')
+      afterLogin.get('/transaction/cancel/')
         .then((response) => {
           resolve(response)
         })
@@ -228,7 +228,7 @@ const actions = {
   },
   cancelTransaction (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/transaction/cancel/${id}`)
+      afterLogin.delete(`/transaction/cancel/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -246,7 +246,7 @@ const actions = {
   },
   approve1 (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.put(`/api/v1/transaction/approving1/${id}`)
+      afterLogin.put(`/transaction/approving1/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -264,7 +264,7 @@ const actions = {
   },
   approve2 (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.put(`/api/v1/transaction/approving2/${id}`)
+      afterLogin.put(`/transaction/approving2/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -282,7 +282,7 @@ const actions = {
   },
   getApprovalSetting () {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/approvalSetting/')
+      afterLogin.get('/approvalSetting/')
         .then((response) => {
           resolve(response)
         })
@@ -299,7 +299,7 @@ const actions = {
   },
   saveApprovalSetting (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/approvalSetting/', payload)
+      afterLogin.post('/approvalSetting/', payload)
         .then((response) => {
           resolve(response)
         })
@@ -312,7 +312,7 @@ const actions = {
   },
   deleteCustomerService (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post(`/api/v1/customerService/${payload.id_customer}`, payload)
+      afterLogin.post(`/customerService/${payload.id_customer}`, payload)
         .then((response) => {
           resolve(response)
         })
@@ -331,7 +331,7 @@ const actions = {
   retrieveApprovalList (context, approval) {
     console.log(approval)
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/transaction/approval/${approval}`)
+      afterLogin.get(`/transaction/approval/${approval}`)
         .then((response) => {
           resolve(response)
         })
@@ -347,7 +347,7 @@ const actions = {
   },
   deleteTransaction (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/transaction/${id}`)
+      afterLogin.delete(`/transaction/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -365,7 +365,7 @@ const actions = {
   },
   editTransaction (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.put(`/api/v1/transaction/${payload._id}`, payload)
+      afterLogin.put(`/transaction/${payload._id}`, payload)
         .then((response) => {
           resolve(response)
         })
@@ -384,7 +384,7 @@ const actions = {
   },
   retrieveTransactionDetail (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/transaction/${id}`)
+      afterLogin.get(`/transaction/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -400,7 +400,7 @@ const actions = {
   },
   retrieveTransactionList () {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/transaction')
+      afterLogin.get('/transaction')
         .then((response) => {
           resolve(response)
         })
@@ -416,7 +416,7 @@ const actions = {
   },
   addTransaction (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/transaction', payload)
+      afterLogin.post('/transaction', payload)
         .then((response) => {
           resolve(response)
         })
@@ -435,7 +435,7 @@ const actions = {
   },
   retrieveAvailServiceList (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/customerServiceAvail/${id}`)
+      afterLogin.get(`/customerServiceAvail/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -451,7 +451,7 @@ const actions = {
   },
   deleteAllCustomerService (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/customerDeleteAll/${id}`)
+      afterLogin.delete(`/customerDeleteAll/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -469,7 +469,7 @@ const actions = {
   },
   retrieveCustomerServiceList (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/customerService/${id}`)
+      afterLogin.get(`/customerService/${id}`)
         .then((response) => {
           context.commit('retrieveCustomerServiceList', response)
           resolve(response)
@@ -486,7 +486,7 @@ const actions = {
   },
   addCustomerService (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/customerService', payload)
+      afterLogin.post('/customerService', payload)
         .then((response) => {
           resolve(response)
         })
@@ -505,7 +505,7 @@ const actions = {
   },
   editServiceData (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.put(`/api/v1/service/${payload.id}`, payload)
+      afterLogin.put(`/service/${payload.id}`, payload)
         .then((response) => {
           resolve(response)
         })
@@ -521,7 +521,7 @@ const actions = {
   },
   deleteService (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/service/${id}`)
+      afterLogin.delete(`/service/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -539,7 +539,7 @@ const actions = {
   },
   addService (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/service', payload)
+      afterLogin.post('/service', payload)
         .then((response) => {
           resolve(response)
         })
@@ -558,7 +558,7 @@ const actions = {
   },
   retrieveServiceList (context) {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/service')
+      afterLogin.get('/service')
         .then((response) => {
           context.commit('retrieveServiceList', response)
           resolve(response)
@@ -575,7 +575,7 @@ const actions = {
   },
   deleteVendor (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/vendor/${id}`)
+      afterLogin.delete(`/vendor/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -593,7 +593,7 @@ const actions = {
   },
   editVendorData (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.put(`/api/v1/vendor/${payload.id}`, payload)
+      afterLogin.put(`/vendor/${payload.id}`, payload)
         .then((response) => {
           resolve(response)
         })
@@ -609,7 +609,7 @@ const actions = {
   },
   retrieveVendorDetail (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/vendor/${id}`)
+      afterLogin.get(`/vendor/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -627,7 +627,7 @@ const actions = {
   },
   addVendor (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/vendor', payload)
+      afterLogin.post('/vendor', payload)
         .then((response) => {
           resolve(response)
         })
@@ -643,7 +643,7 @@ const actions = {
   },
   retrieveVendorList (context) {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/vendors')
+      afterLogin.get('/vendors')
         .then((response) => {
           context.commit('retrieveVendorList', response)
           resolve(response)
@@ -660,7 +660,7 @@ const actions = {
   },
   deleteCustomer (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/customer/${id}`)
+      afterLogin.delete(`/customer/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -678,7 +678,7 @@ const actions = {
   },
   editCustomerData (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.put(`/api/v1/customer/${payload.id}`, payload)
+      afterLogin.put(`/customer/${payload.id}`, payload)
         .then((response) => {
           resolve(response)
         })
@@ -694,7 +694,7 @@ const actions = {
   },
   retrieveCustomerDetail (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/customer/${id}`)
+      afterLogin.get(`/customer/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -712,7 +712,7 @@ const actions = {
   },
   addCustomer (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/customer', payload)
+      afterLogin.post('/customer', payload)
         .then((response) => {
           resolve(response)
         })
@@ -728,7 +728,7 @@ const actions = {
   },
   retrieveCustomerList (context) {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/customers')
+      afterLogin.get('/customers')
         .then((response) => {
           context.commit('retrieveCustomerList', response)
           resolve(response)
@@ -745,7 +745,7 @@ const actions = {
   },
   deleteUser (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.delete(`/api/v1/user/${id}`)
+      afterLogin.delete(`/user/${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -763,7 +763,7 @@ const actions = {
   },
   addUser (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/users/add', payload)
+      afterLogin.post('/users/add', payload)
         .then((response) => {
           resolve(response)
         })
@@ -779,7 +779,7 @@ const actions = {
   },
   editUserData (context, payload) {
     return new Promise((resolve, reject) => {
-      afterLogin.post('/api/v1/user/update', payload)
+      afterLogin.post('/user/update', payload)
         .then((response) => {
           resolve(response)
         })
@@ -795,7 +795,7 @@ const actions = {
   },
   retrieveUserDetail (context, id) {
     return new Promise((resolve, reject) => {
-      afterLogin.get(`/api/v1/user?id=${id}`)
+      afterLogin.get(`/user?id=${id}`)
         .then((response) => {
           resolve(response)
         })
@@ -813,7 +813,7 @@ const actions = {
   },
   retrieveUserList (context) {
     return new Promise((resolve, reject) => {
-      afterLogin.get('/api/v1/users')
+      afterLogin.get('/users')
         .then((response) => {
           context.commit('retrieveUserList', response)
           resolve(response)
