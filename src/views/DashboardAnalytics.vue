@@ -245,6 +245,7 @@ export default {
     }
   },
   async created () {
+    console.log(this.$store.state.AppActiveUser)
     this.loadData()
     this.$vs.loading()
     await this.sockets.subscribe('updateTrx', () => {

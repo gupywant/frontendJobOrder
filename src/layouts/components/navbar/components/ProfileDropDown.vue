@@ -36,7 +36,11 @@ export default {
   },
   computed: {
     activeUserInfo () {
-      return this.$store.state.AppActiveUser
+      const userinfo = JSON.parse(localStorage.getItem('userInfo'))
+      if (userinfo.photoURL === '') {
+        return {photoURL: 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png', displayName: userinfo.displayName}
+      }
+      return userinfo 
     }
   },
   methods: {
