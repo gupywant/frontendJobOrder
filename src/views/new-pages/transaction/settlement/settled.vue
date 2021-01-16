@@ -97,7 +97,7 @@ export default {
       availService: [],
       settlement: [],
       avail : false,
-      titleTop: 'SettledJob Order Detail',
+      titleTop: 'Settled Job Order Detail',
       title: '',
       modal: false,
       newService: [],

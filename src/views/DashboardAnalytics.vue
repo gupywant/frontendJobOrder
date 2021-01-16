@@ -381,7 +381,7 @@ export default {
         })
     },
     handleSettlement (tr) {
-      this.$router.push({name: 'transaction-settled', params: { id: tr._id }})
+      this.$router.push({name: 'transaction-settlement-create', params: { id: tr._id }})
     },
     async retrieveSettlementList () {
       const approval = 3
