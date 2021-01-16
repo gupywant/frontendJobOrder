@@ -167,6 +167,15 @@ export default {
               }
               this.$store.dispatch('addCustomerService', payloads)
                 .then(() => {
+                  this.email = ''
+                  this.name = ''
+                  this.phone = ''
+                  this.npwp = ''
+                  this.address = ''
+                  this.province = ''
+                  this.country = ''
+                  this.postal_code = ''
+                  this.attn = ''
                   this.$socket.emit('updateCustomer')
                   this.$vs.loading.close()
                   this.$vs.notify({

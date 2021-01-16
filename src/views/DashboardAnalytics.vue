@@ -10,12 +10,10 @@
 <template>
   <div id="transaction-list">
     <div class="vx-row">
-      <!-- CARD 1: JOB ORDER -->
+      <!-- CARD 1: JOB ORDER 
       <div class="vx-col w-full mb-4">
         <vx-card title="Job Order List">
-          <!--emplate slot="actions">
             <vs-button color="success" type="filled">Success</vs-button>
-          </template-->
           <div slot="no-body" class="mt-4">
             <vs-table max-items="3" v-model="selectedOrder" @selected="handleSelectedOrder" pagination :data="transactionList" class="table-dark-inverted" stripe>
               <template slot="thead">
@@ -47,10 +45,10 @@
           </div>
         </vx-card>
       </div>
-      <!-- END OF JOB ORDER -->
+      END OF JOB ORDER -->
       <!-- CARD 2: Approval 1 -->
       <div class="vx-col w-full mb-4">
-        <vx-card title="Approval 1">
+        <vx-card title="Job Order List">
           <!--emplate slot="actions">
             <vs-button color="success" type="filled">Success</vs-button>
           </template-->
@@ -92,7 +90,7 @@
       <!-- END OF APPROVAL 1 -->
       <!-- CARD 2: Approval 2 -->
       <div class="vx-col w-full mb-4">
-        <vx-card title="Approval 2">
+        <vx-card title="Approved 1">
           <!--emplate slot="actions">
             <vs-button color="success" type="filled">Success</vs-button>
           </template-->
@@ -134,7 +132,7 @@
       <!-- END OF APPROVAL 2 -->
       <!-- CARD 3: SETTLEMENT -->
       <div class="vx-col w-full mb-4">
-        <vx-card title="Job Order Settlement">
+        <vx-card title="Approved 2">
           <!--emplate slot="actions">
             <vs-button color="success" type="filled">Success</vs-button>
           </template-->
@@ -178,6 +176,58 @@
         </vx-card>
       </div>
       <!-- END OF SETTLEMENT -->
+      <!-- CARD 4: SETTLE FINISH -->
+      <div class="vx-col w-full mb-4">
+        <vx-card title="Settled Job Order">
+          <!--emplate slot="actions">
+            <vs-button color="success" type="filled">Success</vs-button>
+          </template-->
+          <div slot="no-body" class="mt-4">
+            <vs-table v-model="selectedSettled" @selected="handleSettledSelected" max-items="3" pagination :data="settledList" class="table-dark-inverted" stripe>
+              <template slot="thead">
+                <vs-th>TRX CODE</vs-th>
+                <vs-th>CUSTOMER CODE</vs-th>
+                <vs-th>VENDOR CODE</vs-th>
+                <vs-th>TOTAL AMOUNT</vs-th>
+                <vs-th>APPROVAL 1 DATE</vs-th>
+                <vs-th>APPROVAL 2 DATE</vs-th>
+                <vs-th>SETTLEMENT DATE</vs-th>
+              </template>
+
+              <template slot-scope="{data}">
+                <vs-tr :data="tr" :key="i" v-for="(tr, i) in data">
+                  <vs-td :data="data[i].code">
+                    <span>TRX-{{codeGenerator(data[i].code)}}</span>
+                  </vs-td>
+                  <vs-td :data="data[i].customer_code">
+                    <div class="con-images">
+                      <span>CUS-{{codeGenerator(data[i].customer_code)}}</span>
+                    </div>
+                  </vs-td>
+                  <vs-td :data="data[i].vendor_code">
+                    <div class="con-images">
+                      <span>CUS-{{codeGenerator(data[i].vendor_code)}}</span>
+                    </div>
+                  </vs-td>
+                  <vs-td :data="data[i].settlement_amount">
+                    <span>{{data[i].settlement_amount}}</span>
+                  </vs-td>
+                  <vs-td :data="data[i].approval1_date">
+                    <span>{{format_date(data[i].approval1_date)}}</span>
+                  </vs-td>
+                  <vs-td :data="data[i].approval2_date">
+                    <span>{{format_date(data[i].approval2_date)}}</span>
+                  </vs-td>
+                  <vs-td :data="data[i].settlement_date">
+                    <span>{{format_date(data[i].settlement_date)}}</span>
+                  </vs-td>
+                </vs-tr>
+              </template>
+            </vs-table>
+          </div>
+        </vx-card>
+      </div>
+      <!-- END OF SETTLE FINISH -->
       <!-- CARD 4: INVOICE -->
       <div class="vx-col w-full mb-4">
         <vx-card title="Invoice">
@@ -235,12 +285,14 @@ export default {
       selectedApp1: [],
       selectedApp2: [],
       selectedApproval: [],
+      selectedSettled: [],
       selectedInvoice: [],
       data: null,
       transactionList: [],
       approvalList: [],
       approvalList2: [],
       settlementList: [],
+      settledList: [],
       invoiceList: []
     }
   },
@@ -280,6 +332,7 @@ export default {
       this.retrieveApprovalList()
       this.retrieveApprovalList2()
       this.retrieveSettlementList()
+      this.retrieveSettledList()
       this.retrieveInvoiceList()
     },
     handleSelectedOrder (tr) {
@@ -294,13 +347,7 @@ export default {
         })
         .catch((error) => {
           this.$vs.loading.close()
-          this.$vs.notify({
-            title: 'Error',
-            text: error.message,
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'danger'
-          })
+          console.log(error.message)
         })
     },
     handleSelectedApp1 (tr) {
@@ -315,13 +362,7 @@ export default {
         })
         .catch((error) => {
           this.$vs.loading.close()
-          this.$vs.notify({
-            title: 'Error',
-            text: error.message,
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'danger'
-          })
+          console.log(error.message)
         })
     },
     handleSelectedApp2 (tr) {
@@ -336,17 +377,11 @@ export default {
         })
         .catch((error) => {
           this.$vs.loading.close()
-          this.$vs.notify({
-            title: 'Error',
-            text: error.message,
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'danger'
-          })
+          console.log(error.message)
         })
     },
     handleSettlement (tr) {
-      this.$router.push({name: 'transaction-settlement-create', params: { id: tr._id }})
+      this.$router.push({name: 'transaction-settled', params: { id: tr._id }})
     },
     async retrieveSettlementList () {
       const approval = 3
@@ -357,13 +392,22 @@ export default {
         })
         .catch((error) => {
           this.$vs.loading.close()
-          this.$vs.notify({
-            title: 'Error',
-            text: error.message,
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'danger'
-          })
+          console.log(error.message)
+        })
+    },
+    handleSettledSelected (tr) {
+      this.$router.push({name: 'transaction-settled', params: { id: tr._id }})
+    },
+    async retrieveSettledList () {
+      await this.$store.dispatch('retrieveSettledList')
+        .then(async (response) => {
+          this.settledList = await response.data.data
+          console.log(this.settledList[0].id_code)
+          this.$vs.loading.close()
+        })
+        .catch((error) => {
+          this.$vs.loading.close()
+          console.log(error.message)
         })
     },
     handleInvoice (tr) {
@@ -377,13 +421,7 @@ export default {
         })
         .catch((error) => {
           this.$vs.loading.close()
-          this.$vs.notify({
-            title: 'Error',
-            text: error.message,
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'danger'
-          })
+          console.log(error.message)
         })
     },
     format_date (value) {

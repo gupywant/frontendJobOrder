@@ -123,6 +123,15 @@ export default {
           this.$store.dispatch('addVendor', payload)
             .then(() => {
               this.$socket.emit('updateVendor')
+              this.email = ''
+              this.name = ''
+              this.phone = ''
+              this.npwp = ''
+              this.address = ''
+              this.province = ''
+              this.country = ''
+              this.postal_code = ''
+              this.attn = ''
               this.$vs.loading.close()
               this.$vs.notify({
                 title: 'Success',

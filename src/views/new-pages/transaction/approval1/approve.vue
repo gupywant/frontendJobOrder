@@ -83,7 +83,6 @@
             <div class="vx-col w-full">
               <div class="mt-8 flex flex-wrap items-center justify-end">
                 <vs-button class="ml-2 mt-2" @click="confirmApproveRecord()">Approve</vs-button>
-                <vs-button class="ml-2 mt-2" @click="confirmDeleteRecord()">Reject</vs-button>
                 <vs-button class="ml-2 mt-2" :to="{name: 'transaction-approval1'}">Close</vs-button>
               </div>
             </div>
@@ -183,7 +182,7 @@ export default {
       this.$vs.notify({
         color: 'success',
         title: 'Transaction Deleted',
-        text: 'The selected transaction was successfully rejected and deleted'
+        text: 'The selected transaction was successfully rejected'
       })
     },
     format_date (value) {

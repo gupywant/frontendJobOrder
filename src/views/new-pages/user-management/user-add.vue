@@ -123,6 +123,9 @@ export default {
           this.$vs.loading()
           this.$store.dispatch('addUser', payload)
             .then(() => {
+              this.email = ''
+              this.name = ''
+              this.password = ''
               this.$socket.emit('updateUser')
               this.$vs.loading.close()
               this.$vs.notify({

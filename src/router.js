@@ -897,6 +897,15 @@ const router = new Router({
             requiresAdmin: true,
             rule: 'admin'
           }
+        },
+        {
+          path: '/transaction/settled/:id',
+          name: 'transaction-settled',
+          component: () => import('./views/new-pages/transaction/settlement/settled.vue'),
+          meta: {
+            requiresAdmin: true,
+            rule: 'admin'
+          }
         }, // end of settlement
         {// documents upload
           path: '/transaction/document',

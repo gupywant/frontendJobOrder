@@ -8,7 +8,7 @@
 ========================================================================================== -->
 
 <template>
-  <div id="transaction-add">
+  <div id="transaction-settled">
     <div class="vx-row">
       <!-- CARD 9: DISPATCHED ORDERS -->
       <div class="vx-col w-full">
@@ -19,25 +19,26 @@
               <div class="vx-col w-1/2">
                 <vx-input-group class="mb-6">
                   Customer
-                  <v-select label="name" v-validate="'required'" :options="customerList" @input="onInput()" v-model="customer" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
+                  <v-select label="name" :options="customerList" :disabled="serviceDisabled" @input="onInput()" v-model="customer" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/2">
                 <vx-input-group class="mb-6">
                   Vendor
-                  <v-select label="name" v-validate="'required'" :options="vendorList" v-model="vendor" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
+                  <v-select label="name" :options="vendorList" disabled v-model="vendor" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
                 </vx-input-group>
               </div>
             </div>
-            <vs-divider color="primary">Service</vs-divider>
+          </div>
+          <vs-divider color="primary">Service</vs-divider>
             <div class="vx-row">
               <div class="vx-col w-full">
                 <vs-table search max-items="5" :data="availServiceList" class="table-dark-inverted" stripe>
                   <template slot="thead">
                     <vs-th>Service Name</vs-th>
                     <vs-th>Description</vs-th>
-                    <vs-th>Qty</vs-th>
-                    <vs-th>Planned Amount</vs-th>
+                    <vs-th>Sattlement Qty</vs-th>
+                    <vs-th>Sattlement Amount</vs-th>
                   </template>
 
                   <template slot-scope="{data}">
@@ -50,44 +51,27 @@
                         <span v-else>{{data[i].description.substr(0,10)}}</span>
                       </vs-td>
                       <vs-td>
-                        <vs-input v-validate="'required|numeric'" v-model="qty[i]" type="text" placeholder="Quantity" />
+                        <vs-input style="width: 50px;" readonly v-validate="'required|numeric'" v-model="settlement[i].qty" type="text" placeholder="Planned Amount" />
                       </vs-td>
                       <vs-td>
-                        <vs-input v-validate="'required|numeric'" v-model="planned_amount[i]" type="text" placeholder="Planned Amount" />
+                        <vs-input v-validate="'required|numeric'" readonly v-model="settlement[i].settlement_amount" type="text" placeholder="Planned Amount" />
                       </vs-td>
                     </vs-tr>
                   </template>
                 </vs-table>
-                <br/>
-                <vs-button @click="addModal()" color="primary" type="filled">Add More Service</vs-button>
               </div>
             </div>
-          </div>
           <!-- Save & Reset Button -->
           <div class="vx-row">
             <div class="vx-col w-full">
               <div class="mt-8 flex flex-wrap items-center justify-end">
-                <vs-button class="ml-auto mt-2" @click="add()">Submit</vs-button>
+                <vs-button class="ml-auto mt-2" :to="{name: 'dashboard-analytics'}">Close</vs-button>
               </div>
             </div>
           </div>
         </vx-card>
       </div>
     </div>
-     <!--popup modal -->
-    <div class="centerx">
-      <vs-popup class="holamundo"  :title="title" :active.sync="modal">
-        <div class="vx-col w-full">  
-          <vx-input-group class="mb-6">
-            <v-select label="name" :options="options" v-model="newService" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
-          </vx-input-group>
-        </div>
-        <div>
-          <vs-button @click="addService()" color="primary" type="filled">Submit</vs-button>
-        </div>
-      </vs-popup>
-    </div>
-    <!-- end off popup modal -->
   </div>
 </template>
 
@@ -96,8 +80,13 @@ import vSelect from 'vue-select'
 export default {
   data () {
     return {
+      departmentS:[
+        {text:'CSO', value:'0'},
+        {text:'Marketing', value:'1'},
+        {text:'Operational', value:'2'}
+      ],
+      department: null,
       x: null,
-      qty: [],
       planned_amount: [],
       serviceDisabled: true,
       customerList: [],
@@ -106,72 +95,45 @@ export default {
       vendor: [],
       availServiceList: [],
       availService: [],
+      settlement: [],
       avail : false,
-      titleTop: 'Create Job Order',
+      titleTop: 'SettledJob Order Detail',
       title: '',
       modal: false,
       newService: [],
       selected: [],
-      options: [],
-      code: 0
+      options: []
     }
   },
   components: {
     'v-select': vSelect
   },
-  created () {
-    this.retrieveCustomerList()
-    this.retrieveVendorList()
+  async created () {
+    await this.retrieveCustomerList()
+    await this.retrieveVendorList()
+    await this.retrieveTransactionDetail()
   },
   methods: {
     add () {
       this.addTransaction()
     },
-    addModal () {
-      this.retrieveServiceList()
-      this.title = 'Add New Service'
-      this.newService = []
-      this.modal = true
-    },
-    addService () {
-      const payload = {
-        id_customer: this.customer._id,
-        id_service: this.newService._id,
-        add: true
-      }
+    retrieveTransactionDetail () {
+      const id = this.$route.params.id
       this.$vs.loading()
-      this.$store.dispatch('addCustomerService', payload)
-        .then(() => {
-          this.modal = false
-          this.retrieveAvailServiceList()
-          this.$vs.loading.close()
-          this.$vs.notify({
-            title: 'Success',
-            text: 'New Service Added Successfully',
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'success'
+      this.$store.dispatch('retrieveSettledDetail', id)
+        .then(async (response) => {
+          await response.data.data.map((item) => {
+            this.availServiceList.push({id_service: item.service_id, name: item.service_name, description: item.service_description, qty: item.qty, planned_amount: item.planned_amount})
           })
-        })
-        .catch((error) => { 
-          this.$vs.loading.close()
-          this.$vs.notify({
-            title: 'Error',
-            text: error.message,
-            iconPack: 'feather',
-            icon: 'icon-alert-circle',
-            color: 'danger'
+          await response.data.data.map((item) => {
+            this.settlement.push({id_service: item.service_id, qty: item.qty, settlement_amount: item.planned_amount})
           })
-        })
-    },
-    retrieveServiceList () {
-      this.serviceList = []
-      this.$store.dispatch('retrieveServiceList')
-        .then((response) => {
-          this.options = response.data.data
+          this.customer = await {id_customer: response.data.data[0].customer_id, name: response.data.data[0].customer_name}
+          this.vendor = {_id: response.data.data[0].vendor_id, name: response.data.data[0].vendor_name}
           this.$vs.loading.close()
         })
         .catch((error) => {
+          this.transaction_not_found = true
           this.$vs.loading.close()
           this.$vs.notify({
             title: 'Error',
@@ -182,56 +144,32 @@ export default {
           })
         })
     },
-    async onInput () {
+    onInput () {
       this.availService = []
       if (this.customer.length !== 0) {
         this.serviceDisabled = false
         this.availServiceList = []
-        await this.retrieveAvailServiceList()
+        this.retrieveAvailServiceList()
       }
     },
-    confirmAdd () {
-      this.$vs.dialog({
-        type: 'confirm',
-        color: 'primary',
-        title: 'Confirmation',
-        text: 'This user has no service available, Add new service to this customer?',
-        accept: this.addModal,
-        acceptText: 'Continue'
-      })
-    },
-    codeDialog () {
-      this.$vs.dialog({
-        type: 'confirm',
-        color: 'info',
-        title: 'Success',
-        cancelText: 'Ok',
-        text: `Job order has been created successfully with code TRX-${this.codeGenerator(this.code)}`
-      })
-    },
-    addTransaction () {
+    saveTransaction () {
       this.$validator.validateAll().then(async (result) => {
         if (result) {
           const payload = {
-            id_customer: this.customer._id,
+            _id: this.$route.params.id,
+            id_customer: this.customer.id_customer,
             id_vendor: this.vendor._id,
-            id_service: this.availServiceList,
-            planned_amount: this.planned_amount,
-            qty: this.qty
+            id_service: this.settlement
           }
-          this.$store.dispatch('addTransaction', payload)
-            .then((response) => {
-              this.$socket.emit('updateTrx')
-              this.$socket.emit('updateApproval1')
-              this.code = response.data.code
-              //console.log(response.data.code)
-              this.codeDialog()
-              this.availService = []
-              this.customer = []
+          this.$vs.loading()
+          this.$store.dispatch('settlementTransaction', payload)
+            .then(async () => {
+              await this.$socket.emit('updateSettlement')
+              this.$router.push({name: 'transaction-settlement-list'})
               this.$vs.loading.close()
               this.$vs.notify({
                 title: 'Success',
-                text: 'a new transaction has been created',
+                text: 'Transaction has been updated',
                 iconPack: 'feather',
                 icon: 'icon-alert-circle',
                 color: 'success'
@@ -255,7 +193,7 @@ export default {
             icon: 'icon-alert-circle',
             color: 'danger'
           })
-        }
+        } 
       })
     },
     retrieveCustomerList () {
@@ -302,16 +240,15 @@ export default {
       return out.concat(code.toString())
     },
     retrieveAvailServiceList () {
-      const id = this.customer._id
-      console.log(this.customer._id)
+      const id = this.customer.id_customer
+      console.log(this.customer)
       this.$store.dispatch('retrieveAvailServiceList', id)
         .then(async (response) => {
-          this.availServiceList = response.data.data
+          this.availServiceList = await response.data.data
+          this.titleTop = `Transaction Edit - Code : TRX-${this.codeGenerator(response.data.data[0].code)}`
+          await response.data.amount.map(item => this.planned_amount.push(item.planned_amount))
         })
         .catch((error) => {
-          if (error.message === 'No service found for this customer') {
-            this.confirmAdd()
-          }
           this.$vs.loading.close()
           this.$vs.notify({
             title: 'Error',
@@ -355,5 +292,8 @@ export default {
   max-height: 500px;
   overflow: auto;
   /*! rtl:end:ignore */
+}
+.col-input-table{
+  width: 5%;
 }
 </style>
