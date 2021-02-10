@@ -8,7 +8,7 @@
 ==========================================================================================*/
 import axios from 'axios'
 import router from '@/router'
-/*
+/**/
 axios.defaults.baseURL = 'https://uat-api.getrans.co.id/v1'
 axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
 
@@ -19,7 +19,7 @@ const afterLogin = axios.create({
   baseURL: 'https://uat-api.getrans.co.id/v1',
   headers: { 'Access-Control-Allow-Origin' : '*'}
 })
-/**/
+/*
 //local configuration
 axios.defaults.baseURL = 'http://localhost:3000'
 axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
