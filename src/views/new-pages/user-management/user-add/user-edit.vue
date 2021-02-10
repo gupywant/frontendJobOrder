@@ -47,7 +47,7 @@
               <div class="vx-row">
                 <div class="vx-col md:w-1/2 w-full">
                   <vs-input class="w-full mt-4" label="Name" v-model="name" v-validate="'required|min:1'" name="name" />
-
+                  <span class="text-danger text-sm" v-show="errors.has('name')">{{ errors.first('name') }}</span>               
                   <div class="mt-4">     
                     <vs-select class="w-full" label="Role" v-model="role">
                       <vs-select-item :key="index" :value="item.value" :text="item.text" v-for="(item,index) in roleS" />

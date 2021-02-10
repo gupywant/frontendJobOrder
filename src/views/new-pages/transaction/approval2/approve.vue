@@ -37,11 +37,6 @@
                 <td>{{ transaction_data[0].customer_name }}</td>
               </tr>
               <tr>
-                <td class="font-semibold">Vendor</td>
-                <td>VEN-{{ codeGenerator(transaction_data[0].vendor_code) }}</td>
-                <td>{{ transaction_data[0].vendor_name }}</td>
-              </tr>
-              <tr>
                 <td class="font-semibold">Total Amount</td>
                 <td>{{transaction_data[0].total_amount}}</td>
               </tr>

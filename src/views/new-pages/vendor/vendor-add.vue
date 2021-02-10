@@ -17,53 +17,62 @@
             <div class="vx-row"> 
               <div class="vx-col w-1/2">  
                 <vx-input-group class="mb-6">
-                  <vs-input label="Email" v-validate="'required|min:5'" v-model="email" type="text" placeholder="Email" />
+                  <vs-input label="Email" v-validate="'required|min:5'" v-model="email" name="email" type="text" placeholder="Email" />
+                  <span class="text-danger text-sm" v-show="errors.has('email')">{{ errors.first('email') }}</span>               
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/2">  
                 <vx-input-group class="mb-6">
-                  <vs-input label="Name" v-validate="'required|min:1'" v-model="name" type="text" placeholder="Name" />
+                  <vs-input name="name" label="Name" v-validate="'required|min:1'" v-model="name" type="text" placeholder="Name" />
+                  <span class="text-danger text-sm" v-show="errors.has('name')">{{ errors.first('name') }}</span>               
                 </vx-input-group>
               </div>
             </div>
             <div class="vx-row">
               <div class="vx-col w-1/2">
                 <vx-input-group class="mb-6">
-                  <vs-input label="Phone" v-validate="'required|min:10'" v-model="phone" type="text" placeholder="Phone" />
+                  <vs-input label="Phone" name="phone" v-validate="'required|min:10'" v-model="phone" type="text" placeholder="Phone" />
+                  <span class="text-danger text-sm" v-show="errors.has('phone')">{{ errors.first('phone') }}</span>               
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/2">
                 <vx-input-group class="mb-6">
-                  <vs-input label="NPWP" v-validate="'required|min:10'" v-model="npwp" type="text" placeholder="NPWP" />
+                  <vs-input name="npwp" label="NPWP" v-validate="'required|min:10'" v-model="npwp" type="text" placeholder="NPWP" />
+                  <span class="text-danger text-sm" v-show="errors.has('npwp')">{{ errors.first('npwp') }}</span>               
                 </vx-input-group>
               </div>
             </div>
             <div class="vx-row">
               <div class="vx-col w-1/3">
                 <vx-input-group class="mb-6">
-                  <vs-input label="Address" v-validate="'required|min:1'" v-model="address" type="text" placeholder="address" />
+                  <vs-input name="address" label="Address" v-validate="'required|min:1'" v-model="address" type="text" placeholder="address" />
+                  <span class="text-danger text-sm" v-show="errors.has('address')">{{ errors.first('address') }}</span>               
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/3">
                 <vx-input-group class="mb-6">
-                  <vs-input label="Province" v-validate="'required|min:1'" v-model="province" type="text" placeholder="Province" />
+                  <vs-input name="province" label="Province" v-validate="'required|min:1'" v-model="province" type="text" placeholder="Province" />
+                  <span class="text-danger text-sm" v-show="errors.has('province')">{{ errors.first('province') }}</span>               
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/3">
                 <vx-input-group class="mb-6">
-                  <vs-input label="Country" v-validate="'required|min:1'" v-model="country" type="text" placeholder="country" />
+                  <vs-input name="country" label="Country" v-validate="'required|min:1'" v-model="country" type="text" placeholder="country" />
+                  <span class="text-danger text-sm" v-show="errors.has('country')">{{ errors.first('country') }}</span>               
                 </vx-input-group>
               </div>
             </div>
             <div class="vx-row">
               <div class="vx-col w-1/2">
                 <vx-input-group class="mb-6">
-                  <vs-input label="Postal Code" v-validate="'required|min:1'" v-model="postal_code" type="text" placeholder="Postal Code" />
+                  <vs-input name="postal-code" label="Postal Code" v-validate="'required|min:1'" v-model="postal_code" type="text" placeholder="Postal Code" />
+                  <span class="text-danger text-sm" v-show="errors.has('postal-code')">{{ errors.first('postal-code') }}</span>               
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/2">
                 <vx-input-group class="mb-6">
-                  <vs-input label="Attn" v-validate="'required|min:1'" v-model="attn" type="text" placeholder="Attn" />
+                  <vs-input name="attn" label="Attn" v-validate="'required|min:1'" v-model="attn" type="text" placeholder="Attn" />
+                  <span class="text-danger text-sm" v-show="errors.has('attn')">{{ errors.first('attn') }}</span>               
                 </vx-input-group>
               </div>
             </div>

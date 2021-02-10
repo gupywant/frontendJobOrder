@@ -17,19 +17,22 @@
             <div class="vx-row"> 
               <div class="vx-col w-1/2">  
                 <vx-input-group class="mb-6">
-                  <vs-input label="Email" v-validate="'required|min:5'" v-model="email" type="text" placeholder="Email" />
+                  <vs-input label="Email" required v-validate="'required|min:5'" name="email" v-model="email" type="text" placeholder="Email" />
+                  <span class="text-danger text-sm" v-show="errors.has('email')">{{ errors.first('email') }}</span>               
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/2">  
                 <vx-input-group class="mb-6">
-                  <vs-input label="Name" v-validate="'required|min:1'" v-model="name" type="text" placeholder="Name" />
+                  <vs-input label="Name" v-validate="'required|min:1'" v-model="name" name="name" type="text" placeholder="Name" />
+                  <span class="text-danger text-sm" v-show="errors.has('name')">{{ errors.first('name') }}</span> 
                 </vx-input-group>
               </div>
             </div>
             <div class="vx-row">
               <div class="vx-col w-1/2">  
                 <vx-input-group class="mb-6">
-                  <vs-input label="Password" v-validate="'required|min:6'" v-model="password" type="password" placeholder="Password" />
+                  <vs-input label="Password" v-validate="'required|min:6'" name="password" v-model="password" type="password" placeholder="Password" />
+                  <span class="text-danger text-sm" v-show="errors.has('password')">{{ errors.first('password') }}</span> 
                 </vx-input-group>
               </div>
               <div class="vx-col w-1/2">  
@@ -108,6 +111,9 @@ export default {
     //this.retrieveUserList()
   },
   methods: {
+    add () {
+      
+    },
     addUser () {
       this.$validator.validateAll().then(result => {
         if (result) {
