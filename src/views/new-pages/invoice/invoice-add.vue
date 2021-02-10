@@ -31,7 +31,6 @@
                     <vs-th></vs-th>
                     <vs-th>Job Order</vs-th>
                     <vs-th>PO Ref.</vs-th>
-                    <vs-th>Qty</vs-th>
                     <vs-th>Total Amount</vs-th>
                   </template>
 
@@ -45,9 +44,6 @@
                       </vs-td>
                       <vs-td>
                         <vs-input v-model="data[i].ref" type="text" placeholder="PO Reference" />
-                      </vs-td>
-                      <vs-td>
-                        <vs-input readonly v-model="data[i].qty" type="text" placeholder="Qty" />
                       </vs-td>
                       <vs-td>
                         <vs-input readonly v-model="data[i].settlement_amount" type="text" placeholder="Planned Amount" />
@@ -125,52 +121,71 @@ export default {
   },
   methods: {
     add () {
-      //console.log(this.customer)
-      this.addInvoice()
+      const err = 'Form not filled correctly'
+      const selectErr = 'Select minimum one job order to submit'
+      let count = 1
+      let selected = 0
+      try {
+        if (this.pph === '' || this.ppn === '') throw err
+        if (this.customer.length === 0) throw err
+        this.acceptedList.forEach((item) => {
+          if (item.select === true) {
+            if (item.ref === '') throw err
+          } else {
+            selected++
+          }
+          if (count === this.acceptedList.length) {
+            if (selected === this.acceptedList.length) {
+              throw selectErr
+            } else {
+              //console.log(this.acceptedList)
+              this.addInvoice()
+            }
+          }
+          count++
+        })
+      } catch (err) {
+        this.$vs.notify({
+          title: 'Error',
+          text: err,
+          iconPack: 'feather',
+          icon: 'icon-alert-circle',
+          color: 'danger'
+        })
+      }
+      //this.addInvoice()
     },
     addInvoice () {
-      this.$validator.validateAll().then(result => {
-        if (result) {
-          this.$vs.loading()
-          const payload = {
-            customer: this.customer,
-            code: this.acceptedList,
-            ppn: this.ppn,
-            pph: this.pph,
-            type: 1
-          }
-          this.$store.dispatch('addInvoice', payload)
-            .then(async (response) => {
-              this.$socket.emit('updateInvoice')
-              this.$vs.loading.close()
-              this.$vs.notify({
-                title: 'Success',
-                text: 'Invoice created successfully',
-                iconPack: 'feather',
-                icon: 'icon-alert-circle',
-                color: 'success'
-              })
-              this.$router.push({name: 'invoice-invoice', params: { id: response.data.id }})
-            })
-            .catch((error) => {
-              this.$vs.notify({
-                title: 'Error',
-                text: error.message,
-                iconPack: 'feather',
-                icon: 'icon-alert-circle',
-                color: 'danger'
-              })
-            })
-        } else {
+      this.$vs.loading()
+      const payload = {
+        customer: this.customer,
+        code: this.acceptedList,
+        ppn: this.ppn,
+        pph: this.pph,
+        type: 1
+      }
+      this.$store.dispatch('addInvoice', payload)
+        .then(async (response) => {
+          this.$socket.emit('updateInvoice')
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Success',
+            text: 'Invoice created successfully',
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'success'
+          })
+          this.$router.push({name: 'invoice-invoice', params: { id: response.data.id }})
+        })
+        .catch((error) => {
           this.$vs.notify({
             title: 'Error',
-            text: 'Make sure form is correct!!',
+            text: error.message,
             iconPack: 'feather',
             icon: 'icon-alert-circle',
             color: 'danger'
           })
-        }
-      })
+        })
     },
     retrieveCustomerList () {
       this.$store.dispatch('retrieveCustomerList')
@@ -194,8 +209,20 @@ export default {
       this.$vs.loading()
       await this.$store.dispatch('retrieveInvoiceAcceptedList', this.customer._id)
         .then(async (response) => {
-          await response.data.data.map((item) => {
-            this.acceptedList.push({_id: item._id, code: `TRX-${this.codeGenerator(item.code)}`, ref: '', qty: item.qty, settlement_amount: item.settlement_amount})
+          const seen = new Set()
+          const filteredArr = await response.data.data.filter(el => {
+            const duplicate = seen.has(el._id)
+            seen.add(el._id)
+            return !duplicate
+          })
+          await filteredArr.map(item => {
+            this.acceptedList.push({
+              _id: item._id,
+              code: `TRX-${this.codeGenerator(item.code)}`, 
+              ref: '',
+              qty: '',
+              settlement_amount: item.settlement_amount
+            })
           })
           this.$vs.loading.close()
         })

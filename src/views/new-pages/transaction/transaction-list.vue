@@ -19,7 +19,6 @@
           <div slot="no-body" class="mt-4">
             <vs-table search max-items="5" pagination :data="transactionList" class="table-dark-inverted" stripe>
               <template slot="thead">
-                <vs-th>NO</vs-th>
                 <vs-th>TRX CODE</vs-th>
                 <vs-th>CUSTOMER EMAIL</vs-th>
                 <vs-th>CUSTOMER NAME</vs-th>
@@ -30,9 +29,6 @@
 
               <template slot-scope="{data}">
                 <vs-tr :key="i" v-for="(tr, i) in data">
-                  <vs-td :data="i">
-                    <span>{{i+1}}</span>
-                  </vs-td>
                   <vs-td :data="data[i].code">
                     <span>TRX-{{codeGenerator(data[i].code)}}</span>
                   </vs-td>

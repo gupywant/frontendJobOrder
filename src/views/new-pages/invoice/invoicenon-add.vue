@@ -129,10 +129,39 @@ export default {
   },
   methods: {
     add () {
-      console.log(this.acceptedList)
-      console.log(this.ppn)
-      console.log(this.pph)
-      this.addInvoice()
+      const err = 'Form not filled correctly'
+      const selectErr = 'Select minimum one job order to submit'
+      let count = 1
+      let selected = 0
+      try {
+        if (this.pph === '' || this.ppn === '') throw err
+        if (this.customer.length === 0) throw err
+        this.acceptedList.forEach((item) => {
+          if (item.select === true) {
+            if (item.ref === '') throw err
+            if (item.qty === '') throw err
+          } else {
+            selected++
+          }
+          if (count === this.acceptedList.length) {
+            if (selected === this.acceptedList.length) {
+              throw selectErr
+            } else {
+              //console.log(this.acceptedList)
+              this.addInvoice()
+            }
+          }
+          count++
+        })
+      } catch (err) {
+        this.$vs.notify({
+          title: 'Error',
+          text: err,
+          iconPack: 'feather',
+          icon: 'icon-alert-circle',
+          color: 'danger'
+        })
+      }
     },
     addInvoice () {
       this.$validator.validateAll().then(result => {
@@ -200,8 +229,20 @@ export default {
       this.$vs.loading()
       await this.$store.dispatch('retrieveInvoiceAcceptedList', this.customer._id)
         .then(async (response) => {
-          await response.data.data.map((item) => {
-            this.acceptedList.push({_id: item._id, code: `TRX-${this.codeGenerator(item.code)}`, ref: '', settlement_amount: '', qty: ''})
+          const seen = new Set()
+          const filteredArr = await response.data.data.filter(el => {
+            const duplicate = seen.has(el._id)
+            seen.add(el._id)
+            return !duplicate
+          })
+          await filteredArr.map(item => {
+            this.acceptedList.push({
+              _id: item._id,
+              code: `TRX-${this.codeGenerator(item.code)}`, 
+              ref: '',
+              qty: '',
+              settlement_amount: item.settlement_amount
+            })
           })
           this.$vs.loading.close()
         })

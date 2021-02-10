@@ -57,7 +57,6 @@
               <template slot="thead">
                 <vs-th>TRX CODE</vs-th>
                 <vs-th>CUSTOMER CODE</vs-th>
-                <vs-th>VENDOR CODE</vs-th>
                 <vs-th>TOTAL AMOUNT</vs-th>
                 <vs-th>APP DATE</vs-th>
               </template>
@@ -71,9 +70,6 @@
                     <div class="con-images">
                       <span>CUS-{{codeGenerator(data[i].customer_code)}}</span>
                     </div>
-                  </vs-td>
-                  <vs-td :data="data[i].vendor_code">
-                    <span>VEN-{{codeGenerator(data[i].vendor_code)}}</span>
                   </vs-td>
                   <vs-td :data="data[i].total_amount">
                     <span>{{data[i].total_amount}}</span>
@@ -99,7 +95,6 @@
               <template slot="thead">
                 <vs-th>TRX CODE</vs-th>
                 <vs-th>CUSTOMER CODE</vs-th>
-                <vs-th>VENDOR CODE</vs-th>
                 <vs-th>TOTAL AMOUNT</vs-th>
                 <vs-th>APPROVAL 1 DATE</vs-th>
               </template>
@@ -113,9 +108,6 @@
                     <div class="con-images">
                       <span>CUS-{{codeGenerator(data[i].customer_code)}}</span>
                     </div>
-                  </vs-td>
-                  <vs-td :data="data[i].vendor_code">
-                    <span>VEN-{{codeGenerator(data[i].vendor_code)}}</span>
                   </vs-td>
                   <vs-td :data="data[i].total_amount">
                     <span>{{data[i].total_amount}}</span>
@@ -141,7 +133,6 @@
               <template slot="thead">
                 <vs-th>TRX CODE</vs-th>
                 <vs-th>CUSTOMER CODE</vs-th>
-                <vs-th>VENDOR CODE</vs-th>
                 <vs-th>TOTAL AMOUNT</vs-th>
                 <vs-th>APPROVAL 1 DATE</vs-th>
                 <vs-th>APPROVAL 2 DATE</vs-th>
@@ -156,9 +147,6 @@
                     <div class="con-images">
                       <span>CUS-{{codeGenerator(data[i].customer_code)}}</span>
                     </div>
-                  </vs-td>
-                  <vs-td :data="data[i].vendor_code">
-                    <span>VEN-{{codeGenerator(data[i].vendor_code)}}</span>
                   </vs-td>
                   <vs-td :data="data[i].total_amount">
                     <span>{{data[i].total_amount}}</span>
@@ -187,7 +175,6 @@
               <template slot="thead">
                 <vs-th>TRX CODE</vs-th>
                 <vs-th>CUSTOMER CODE</vs-th>
-                <vs-th>VENDOR CODE</vs-th>
                 <vs-th>TOTAL AMOUNT</vs-th>
                 <vs-th>APPROVAL 1 DATE</vs-th>
                 <vs-th>APPROVAL 2 DATE</vs-th>
@@ -202,11 +189,6 @@
                   <vs-td :data="data[i].customer_code">
                     <div class="con-images">
                       <span>CUS-{{codeGenerator(data[i].customer_code)}}</span>
-                    </div>
-                  </vs-td>
-                  <vs-td :data="data[i].vendor_code">
-                    <div class="con-images">
-                      <span>CUS-{{codeGenerator(data[i].vendor_code)}}</span>
                     </div>
                   </vs-td>
                   <vs-td :data="data[i].settlement_amount">
@@ -346,6 +328,7 @@ export default {
           this.$vs.loading.close()
         })
         .catch((error) => {
+          this.transactionList = []
           this.$vs.loading.close()
           console.log(error.message)
         })
@@ -361,6 +344,7 @@ export default {
           this.$vs.loading.close()
         })
         .catch((error) => {
+          this.approvalList = []
           this.$vs.loading.close()
           console.log(error.message)
         })
@@ -376,6 +360,7 @@ export default {
           this.$vs.loading.close()
         })
         .catch((error) => {
+          this.approvalList2 = []
           this.$vs.loading.close()
           console.log(error.message)
         })

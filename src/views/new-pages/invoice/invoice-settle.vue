@@ -31,13 +31,14 @@
                     <vs-th></vs-th>
                     <vs-th>Job Order</vs-th>
                     <vs-th>PO Ref.</vs-th>
+                    <vs-th :style="`display: ${invoice[0].type === 1 ? 'none': 'unset'}`">Qty</vs-th>
                     <vs-th>Total Amount</vs-th>
                   </template>
 
                   <template slot-scope="{data}">
                     <vs-tr :key="i" v-for="(tr, i) in data">
                       <vs-td>
-                        <vs-checkbox v-model="data[i].select"></vs-checkbox>
+                        <vs-checkbox v-model="data[i].settlement"></vs-checkbox>
                       </vs-td>
                       <vs-td :data="data[i].transaction_code">
                         <span>TRX-{{ codeGenerator(data[i].transaction_code) }}</span>
@@ -45,8 +46,11 @@
                       <vs-td>
                         <vs-input v-model="data[i].po_ref" type="text" readonly placeholder="PO Reference" />
                       </vs-td>
+                      <vs-td :style="`display: ${invoice[0].type === 1 ? 'none': 'unset'}`">
+                        <vs-input v-model="data[i].qty" type="text" readonly placeholder="Qty" />
+                      </vs-td>
                       <vs-td>
-                        <vs-input readonly v-model="data[i].amount" type="text" placeholder="Planned Amount" />
+                        <vs-input readonly v-bind:value="`${invoice[0].type === 1 ? data[i].amount: data[i].amount*data[i].qty}`" type="text" placeholder="Planned Amount" />
                       </vs-td>
                     </vs-tr>
                   </template>
@@ -105,14 +109,15 @@ export default {
     'v-select': vSelect
   },
   async created () {
+    this.invoice.push({transaction_code: 0, ppn: 0, pph: 0, type: 1})
     await this.retrieveInvoiceCustomer()
-    this.retrieveInvoice()
+    //this.retrieveInvoice()
   },
   methods: {
     async retrieveInvoiceCustomer () {
       await this.$store.dispatch('retrieveInvoice', this.$route.params.id)
         .then(async (response) => {
-          this.invoice = response.data.data
+          this.invoice = await response.data.data
           this.customer.push({_id: response.data.data[0].id_customer, name: response.data.data[0].customer_name, list: `CUS-${this.codeGenerator(response.data.data[0].customer_code)}, ${response.data.data[0].customer_name}`})
           this.$vs.loading.close()
         })
@@ -128,52 +133,37 @@ export default {
         })
     },
     add () {
-      console.log(this.customer)
-      //this.addInvoice()
+      //console.log(this.invoice)
+      this.settleInvoice()
     },
-    addInvoice () {
-      this.$validator.validateAll().then(result => {
-        if (result) {
-          this.$vs.loading()
-          const payload = {
-            customer: this.customer,
-            code: this.acceptedList,
-            ppn: this.ppn,
-            pph: this.pph,
-            type: 1
-          }
-          this.$store.dispatch('addInvoice', payload)
-            .then(async (response) => {
-              this.$socket.emit('updateInvoice')
-              this.$vs.loading.close()
-              this.$vs.notify({
-                title: 'Success',
-                text: 'Invoice created successfully',
-                iconPack: 'feather',
-                icon: 'icon-alert-circle',
-                color: 'success'
-              })
-              this.$router.push({name: 'invoice-invoice', params: { id: response.data.id }})
-            })
-            .catch((error) => {
-              this.$vs.notify({
-                title: 'Error',
-                text: error.message,
-                iconPack: 'feather',
-                icon: 'icon-alert-circle',
-                color: 'danger'
-              })
-            })
-        } else {
+    settleInvoice () {
+      this.$vs.loading()
+      const payload = {
+        invoice: this.invoice,
+        type: this.invoice[0].type
+      }
+      this.$store.dispatch('settleInvoice', payload)
+        .then(async () => {
+          //this.$socket.emit('updateInvoice')
+          this.$vs.loading.close()
+          this.$vs.notify({
+            title: 'Success',
+            text: 'Invoice saved successfully',
+            iconPack: 'feather',
+            icon: 'icon-alert-circle',
+            color: 'success'
+          })
+          this.$router.push({name: 'invoice-settlement'})
+        })
+        .catch((error) => {
           this.$vs.notify({
             title: 'Error',
-            text: 'Make sure form is correct!!',
+            text: error.message,
             iconPack: 'feather',
             icon: 'icon-alert-circle',
             color: 'danger'
           })
-        }
-      })
+        })
     },
     async onInput () {
       this.availService = []

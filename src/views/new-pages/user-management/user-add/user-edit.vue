@@ -211,7 +211,7 @@ export default {
       this.$refs.update_avatar_input.click()
     },
     handleImage (e) {
-      console.log(e.target.files[0])
+      console.log(e)
       const selectedImage = e.target.files[0]
       this.createBase64Image(selectedImage)
     },

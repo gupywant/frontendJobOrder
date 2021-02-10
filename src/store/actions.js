@@ -8,7 +8,7 @@
 ==========================================================================================*/
 import axios from 'axios'
 import router from '@/router'
-
+/*
 axios.defaults.baseURL = 'https://uat-api.getrans.co.id/v1'
 axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
 
@@ -19,7 +19,7 @@ const afterLogin = axios.create({
   baseURL: 'https://uat-api.getrans.co.id/v1',
   headers: { 'Access-Control-Allow-Origin' : '*'}
 })
-/*
+/*/
 //local configuration
 axios.defaults.baseURL = 'http://localhost:3000'
 axios.defaults.headers = { 'Access-Control-Allow-Origin' : '*'}
@@ -31,7 +31,7 @@ const afterLogin = axios.create({
   baseURL: 'http://localhost:3000/api/v1',
   headers: { 'Access-Control-Allow-Origin' : '*'}
 })
-*/
+/**/
 //Axios after login code
 afterLogin.interceptors.request.use(
   function (config) {
@@ -75,6 +75,24 @@ const actions = {
   uploadImage (context, payload) {
     return new Promise((resolve, reject) => {
       afterLogin.post(`/transaction/image/${payload.id}`, payload)
+        .then((response) => {
+          resolve(response)
+        })
+        .catch((error) => {
+          if (error.response.status === 500) {
+            reject({message: 'Ups Something went Wrong, please make sure if service exist'})
+          } else {
+            reject(error)
+          }
+          reject({message: 'Ups Something went Wrong, please try again'})
+          reject(error)
+          resolve(error)
+        })
+    })
+  },
+  settleInvoice (context, payload) {
+    return new Promise((resolve, reject) => {
+      afterLogin.put('/invoice/settle', payload)
         .then((response) => {
           resolve(response)
         })
@@ -281,6 +299,24 @@ const actions = {
   approve2 (context, id) {
     return new Promise((resolve, reject) => {
       afterLogin.put(`/transaction/approving2/${id}`)
+        .then((response) => {
+          resolve(response)
+        })
+        .catch((error) => {
+          if (error.response.status === 500) {
+            reject({message: 'Ups Something went Wrong, please make sure if service exist'})
+          } else {
+            reject(error)
+          }
+          reject({message: 'Ups Something went Wrong, please try again'})
+          reject(error)
+          resolve(error)
+        })
+    })
+  },
+  rejectTransaction (context, id) {
+    return new Promise((resolve, reject) => {
+      afterLogin.delete(`/transaction/reject/${id}`)
         .then((response) => {
           resolve(response)
         })

@@ -14,54 +14,59 @@
       <div class="vx-col w-full">
         <vx-card :title="titleTop">
           <div slot="no-body" class="mt-4 ml-4 mr-4 mb-4">
-            <vs-divider color="primary"></vs-divider>
+            <vs-divider color="info"></vs-divider>
             <div class="vx-row"> 
-              <div class="vx-col w-1/2">
+              <div class="vx-col w-full">
                 <vx-input-group class="mb-6">
                   Customer
                   <v-select label="name" v-validate="'required'" :options="customerList" @input="onInput()" v-model="customer" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
                 </vx-input-group>
               </div>
-              <div class="vx-col w-1/2">
-                <vx-input-group class="mb-6">
-                  Vendor
-                  <v-select label="name" v-validate="'required'" :options="vendorList" v-model="vendor" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
-                </vx-input-group>
-              </div>
             </div>
-            <vs-divider color="primary">Service</vs-divider>
-            <div class="vx-row">
-              <div class="vx-col w-full">
-                <vs-table search max-items="5" :data="availServiceList" class="table-dark-inverted" stripe>
-                  <template slot="thead">
-                    <vs-th>Service Name</vs-th>
-                    <vs-th>Description</vs-th>
-                    <vs-th>Qty</vs-th>
-                    <vs-th>Planned Amount</vs-th>
-                  </template>
+            <div :key="j" v-for="j in vendorCount">
+              <vs-divider color="primary">Vendor {{ j }}</vs-divider>
+              <div class="vx-row">
+                <div class="vx-col w-full">
+                  <vx-input-group class="mb-6">
+                    Vendor
+                    <v-select label="name" v-validate="'required'" @input="findSameVendor(j - 1)" :options="vendorList" v-model="vendor[j-1]" :dir="$vs.rtl ? 'rtl' : 'ltr'" />
+                  </vx-input-group>
+                </div>
+              </div>
+              <div class="vx-row">
+                <div class="vx-col w-full">
+                  <vs-table max-items="5" :data="availServiceList" class="table-dark-inverted" stripe>
+                    <template slot="thead">
+                      <vs-th>Service Name</vs-th>
+                      <vs-th>Description</vs-th>
+                      <vs-th>Qty</vs-th>
+                      <vs-th>Planned Amount</vs-th>
+                    </template>
 
-                  <template slot-scope="{data}">
-                    <vs-tr :key="i" v-for="(tr, i) in data">
-                      <vs-td :data="i">
-                        <span>{{data[i].name}}</span>
-                      </vs-td>
-                      <vs-td :data="data[i].description">
-                        <span v-if="data[i].description.length >= 10">{{data[i].description.substr(0,10)}}..</span>
-                        <span v-else>{{data[i].description.substr(0,10)}}</span>
-                      </vs-td>
-                      <vs-td>
-                        <vs-input v-validate="'required|numeric'" v-model="qty[i]" type="text" placeholder="Quantity" />
-                      </vs-td>
-                      <vs-td>
-                        <vs-input v-validate="'required|numeric'" v-model="planned_amount[i]" type="text" placeholder="Planned Amount" />
-                      </vs-td>
-                    </vs-tr>
-                  </template>
-                </vs-table>
-                <br/>
-                <vs-button @click="addModal()" color="primary" type="filled">Add More Service</vs-button>
+                    <template slot-scope="{data}">
+                      <vs-tr :key="i" v-for="(tr, i) in data">
+                        <vs-td :data="i">
+                          <span>{{data[i].name}}</span>
+                        </vs-td>
+                        <vs-td :data="data[i].description">
+                          <span v-if="data[i].description.length >= 10">{{data[i].description.substr(0,10)}}..</span>
+                          <span v-else>{{data[i].description.substr(0,10)}}</span>
+                        </vs-td>
+                        <vs-td>
+                          <vs-input v-validate="'numeric'" v-model="qty[j-1][i]" type="text" placeholder="Quantity" />
+                        </vs-td>
+                        <vs-td>
+                          <vs-input v-validate="'numeric'" v-model="planned_amount[j-1][i]" type="text" placeholder="Planned Amount" />
+                        </vs-td>
+                      </vs-tr>
+                    </template>
+                  </vs-table>
+                </div>
               </div>
             </div>
+            <vs-divider color="info"></vs-divider>
+            <vs-button @click="addModal()" color="primary" style="margin-right: 5px" type="filled">Add More Service</vs-button>
+            <vs-button @click="addVendor()" color="primary" type="border">Add More Vendor</vs-button>
           </div>
           <!-- Save & Reset Button -->
           <div class="vx-row">
@@ -97,8 +102,8 @@ export default {
   data () {
     return {
       x: null,
-      qty: [],
-      planned_amount: [],
+      qty: [[]],
+      planned_amount: [[]],
       serviceDisabled: true,
       customerList: [],
       customer: [],
@@ -113,7 +118,9 @@ export default {
       newService: [],
       selected: [],
       options: [],
-      code: 0
+      code: 0,
+      vendorCount: 1,
+      vendorLength: 0
     }
   },
   components: {
@@ -125,7 +132,51 @@ export default {
   },
   methods: {
     add () {
+      console.log(this.vendor[0])
+      console.log(this.qty[0][0])
+      console.log(this.planned_amount[0][0])
       this.addTransaction()
+    },
+    addVendor () {
+      if (this.vendorCount < this.vendorLength) {
+        this.qty.push([])
+        this.planned_amount.push([])
+        this.vendorCount += 1
+        this.vendor.push({})
+      } else {
+        this.maxDialog()
+      }
+    },
+    findSameVendor (n) {
+      let foundVendor = 0
+      this.vendor.map((item) => {
+        console.log(`find ${item.name} | current ${this.vendor[n].name}`)
+        if (item.name === this.vendor[n].name) {
+          foundVendor += 1
+        }
+        if (foundVendor > 1) {
+          this.vendor[n] = {}
+          this.foundVendorDialog()
+        }
+      })
+    },
+    foundVendorDialog () {
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'info',
+        title: 'Warning',
+        cancelText: 'Ok',
+        text: 'This vendor already selected'
+      })
+    },
+    maxDialog () {
+      this.$vs.dialog({
+        type: 'confirm',
+        color: 'info',
+        title: 'Warning',
+        cancelText: 'Ok',
+        text: 'You have been reached the maximum vendor fields'
+      })
     },
     addModal () {
       this.retrieveServiceList()
@@ -214,7 +265,7 @@ export default {
         if (result) {
           const payload = {
             id_customer: this.customer._id,
-            id_vendor: this.vendor._id,
+            vendor: this.vendor,
             id_service: this.availServiceList,
             planned_amount: this.planned_amount,
             qty: this.qty
@@ -279,6 +330,7 @@ export default {
       this.$store.dispatch('retrieveVendorList')
         .then((response) => {
           this.vendorList = response.data.data
+          this.vendorLength = response.data.data.length
           this.$vs.loading.close()
         })
         .catch((error) => {
@@ -307,6 +359,7 @@ export default {
       this.$store.dispatch('retrieveAvailServiceList', id)
         .then(async (response) => {
           this.availServiceList = response.data.data
+          console.log(this.availServiceList)
         })
         .catch((error) => {
           if (error.message === 'No service found for this customer') {

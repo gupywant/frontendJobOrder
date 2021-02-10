@@ -19,18 +19,14 @@
           <div slot="no-body" class="mt-4">
             <vs-table search v-model="selected" @selected="handleSelected" max-items="5" pagination :data="approvalList" class="table-dark-inverted" stripe>
               <template slot="thead">
-                <vs-th>NO</vs-th>
                 <vs-th>TRX CODE</vs-th>
                 <vs-th>CUSTOMER CODE</vs-th>
-                <vs-th>VENDOR CODE</vs-th>
                 <vs-th>TOTAL AMOUNT</vs-th>
+                <vs-th>CREATED DATE</vs-th>
               </template>
 
               <template slot-scope="{data}">
                 <vs-tr :data="tr" :key="i" v-for="(tr, i) in data">
-                  <vs-td :data="i">
-                    <span>{{i+1}}</span>
-                  </vs-td>
                   <vs-td :data="data[i].code">
                     <span>TRX-{{codeGenerator(data[i].code)}}</span>
                   </vs-td>
@@ -39,11 +35,11 @@
                       <span>CUS-{{codeGenerator(data[i].customer_code)}}</span>
                     </div>
                   </vs-td>
-                  <vs-td :data="data[i].vendor_code">
-                    <span>VEN-{{codeGenerator(data[i].vendor_code)}}</span>
-                  </vs-td>
                   <vs-td :data="data[i].total_amount">
                     <span>{{data[i].total_amount}}</span>
+                  </vs-td>
+                  <vs-td :data="data[i].createdAt">
+                    <span>VEN-{{format_date(data[i].createdAt)}}</span>
                   </vs-td>
                 </vs-tr>
               </template>

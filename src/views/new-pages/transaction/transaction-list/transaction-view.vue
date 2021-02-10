@@ -35,10 +35,6 @@
                 <td class="font-semibold">Customer Name</td>
                 <td>{{ transaction_data[0].customer_name }}</td>
               </tr>
-              <tr>
-                <td class="font-semibold">Vendor Name</td>
-                <td>{{ transaction_data[0].vendor_name }}</td>
-              </tr>
             </table>
           </div>
           <!-- /Information - Col 1 -->
@@ -64,31 +60,36 @@
 
         </div>
         <vs-divider color="primary"><span>TRX-{{codeGenerator(transaction_data[0].code)}}</span></vs-divider>
-          <div class="vx-row">
-            <div class="vx-col w-full">
-              <vs-table search max-items="5" :data="transaction_data" class="table-dark-inverted" stripe>
-                <template slot="thead">
-                  <vs-th>Service Name</vs-th>
-                  <vs-th>Qty</vs-th>
-                  <vs-th>Planned Amount</vs-th>
-                </template>
-
-                <template slot-scope="{data}">
-                  <vs-tr :key="i" v-for="(tr, i) in data">
-                    <vs-td :data="i">
-                      <span>{{data[i].service_name}}</span>
-                    </vs-td>
-                    <vs-td>
-                      <span>{{data[i].qty}}</span>
-                    </vs-td>
-                    <vs-td>
-                      <span>{{data[i].planned_amount}}</span>
-                    </vs-td>
-                  </vs-tr>
-                </template>
-              </vs-table>
-            </div>
+        <div class="vx-row">
+          <div class="vx-col w-full mb-10" :key="j" v-for="(vendor, j) in transaction_data">
+            <vs-table max-items="5" :data="service[j]" class="table-dark-inverted" stripe>
+              <template slot="thead">
+                <vs-th></vs-th>
+                <vs-th>Service Name</vs-th>
+                <vs-th>Qty</vs-th>
+                <vs-th>Planned Amount</vs-th>
+              </template>
+              <template slot-scope="{data}">
+                <vs-tr>
+                  <vs-td :rowspan="data.length + 1" style="text-align: center; vertical-align:middle">
+                    <span style="font-weight: bold;"> {{vendor.vendor_name}} </span>
+                  </vs-td>
+                </vs-tr>
+                <vs-tr :key="i" v-for="(tr, i) in data">
+                  <vs-td :data="i">
+                    <span>{{service[j][i].name}}</span>
+                  </vs-td>
+                  <vs-td>
+                    <span>{{service[j][i].qty}}</span>
+                  </vs-td>
+                  <vs-td>
+                    <span>{{service[j][i].planned_amount}}</span>
+                  </vs-td>
+                </vs-tr>
+              </template>
+            </vs-table>
           </div>
+        </div>
       </vx-card>
     </div>
   </div>
@@ -101,7 +102,8 @@ export default {
   data () {
     return {
       transaction_data: null,
-      transaction_not_found: false
+      transaction_not_found: false,
+      service: [[]]
     }
   },
   methods: {
@@ -129,7 +131,6 @@ export default {
       this.$vs.loading()
       this.$store.dispatch('deleteTransaction', this.$route.params.id)
         .then(async () => {
-          //await this.deteteAllService()
           this.$vs.loading.close()
           this.$router.push({name:'transaction-list'})
           this.showDeleteSuccess()
@@ -170,13 +171,27 @@ export default {
     const id = this.$route.params.id
     this.$vs.loading()
     this.$store.dispatch('retrieveTransactionDetail', id)
-      .then((response) => {
+      .then(async (response) => {
         this.transaction_data = response.data.data
-        console.log(response.data.data)
+        let indexNow = 0
+        for (let i = 0; i < response.data.service.length; i++) {
+          if (response.data.service[i + 1] !== undefined) {
+            if (response.data.service[i]._id === response.data.service[i + 1]._id) {
+              this.service[indexNow].push({name: response.data.service[i].service_name, qty: response.data.service[i].qty, planned_amount: response.data.service[i].planned_amount})
+            } else {
+              this.service[indexNow].push({name: response.data.service[i].service_name, qty: response.data.service[i].qty, planned_amount: response.data.service[i].planned_amount})
+              indexNow += 1
+              this.service.push([])
+            }
+          } else {
+            this.service[indexNow].push({name: response.data.service[i].service_name, qty: response.data.service[i].qty, planned_amount: response.data.service[i].planned_amount})
+          }
+        }
         this.$vs.loading.close()
       })
       .catch((error) => {
-        this.transaction_not_found = true
+        console.log(error)
+        this.transaction_not_found = false
         this.$vs.loading.close()
         this.$vs.notify({
           title: 'Error',

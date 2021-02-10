@@ -21,8 +21,8 @@
               <template slot="thead">
                 <vs-th>TRX CODE</vs-th>
                 <vs-th>CUSTOMER CODE</vs-th>
-                <vs-th>VENDOR CODE</vs-th>
                 <vs-th>TOTAL AMOUNT</vs-th>
+                <vs-th>CREATED DATE</vs-th>
               </template>
 
               <template slot-scope="{data}">
@@ -35,11 +35,11 @@
                       <span>CUS-{{codeGenerator(data[i].customer_code)}}</span>
                     </div>
                   </vs-td>
-                  <vs-td :data="data[i].vendor_code">
-                    <span>VEN-{{codeGenerator(data[i].vendor_code)}}</span>
-                  </vs-td>
                   <vs-td :data="data[i].total_amount">
                     <span>{{data[i].total_amount}}</span>
+                  </vs-td>
+                  <vs-td :data="data[i].createdAt">
+                    <span>VEN-{{format_date(data[i].createdAt)}}</span>
                   </vs-td>
                 </vs-tr>
               </template>

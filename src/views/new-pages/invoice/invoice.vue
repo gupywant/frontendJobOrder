@@ -11,7 +11,7 @@
 <template>
     <div id="invoice-page">
 
-        <div class="flex flex-wrap items-center justify-between">
+        <!--<div class="flex flex-wrap items-center justify-between">
           <vx-input-group class="mb-base mr-3">
             <vs-input v-model="mailTo" placeholder="Email" />
 
@@ -25,7 +25,7 @@
             <vs-button class="mb-base mr-3" type="border" icon-pack="feather" icon="icon icon-download">Download</vs-button>
             <vs-button class="mb-base mr-3" icon-pack="feather" icon="icon icon-file" @click="printInvoice">Print</vs-button>
           </div>
-        </div>
+        </div>-->
 
         <vx-card id="invoice-container">
 
@@ -92,7 +92,6 @@
                     <template slot="thead">
                         <vs-th class="pointer-events-none">JOB ORDER</vs-th>
                         <vs-th class="pointer-events-none">PO REF.</vs-th>
-                        <vs-th class="pointer-events-none">VENDOR CODE</vs-th>
                         <vs-th v-if="invoice[0].type === 2" class="pointer-events-none">QTY</vs-th>
                         <vs-th v-if="invoice[0].type === 2" class="pointer-events-none">AMOUNT</vs-th>
                         <vs-th class="pointer-events-none">TOTAL AMOUNT</vs-th>
@@ -103,7 +102,6 @@
                         <vs-tr v-for="(tr, i) in data" :key="i">
                             <vs-td :data="data[i].transaction_code">TRX-{{ codeGenerator(data[i].transaction_code) }}</vs-td>
                             <vs-td :data="data[i].po_ref">{{ data[i].po_ref }}</vs-td>
-                            <vs-td :data="data[i].vendor_code">VEN-{{ codeGenerator(data[i].vendor_code) }}</vs-td>
                             <vs-td v-if="data[i].type === 2" :data="data[i].qty">{{ data[i].qty }}</vs-td>
                             <vs-td v-if="data[i].type === 2" :data="data[i].amount">{{ data[i].amount }}</vs-td>
                             <vs-td v-if="data[i].type === 2">{{ data[i].amount * data[i].qty }}</vs-td>
@@ -170,7 +168,7 @@ export default{
       }
     }
   },
-  async created () {
+  async mounted () {
     await this.retrieveInvoice()
   },
   methods: {
